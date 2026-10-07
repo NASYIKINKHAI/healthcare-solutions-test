@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI-Powered Hospital Capacity & Patient Flow Intelligence</title>
+  <meta name="description" content="AI-powered hospital capacity and patient flow intelligence platform for forecasting demand, protecting capacity, and supporting care teams." />
+  <style>
+    :root {
+      --bg: #f5f9fc;
+      --surface: #ffffff;
+      --surface-2: #eef6f8;
+      --text: #102a43;
+      --muted: #627d98;
+      --primary: #087f8c;
+      --primary-dark: #05616b;
+      --accent: #36b37e;
+      --blue: #2f80ed;
+      --warning: #f2a93b;
+      --danger: #df5b5b;
+      --border: #d9e5ec;
+      --shadow: 0 16px 45px rgba(16, 42, 67, 0.09);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .container {
+      width: min(1160px, calc(100% - 40px));
+      margin: auto;
+    }
+
+    /* NAVIGATION */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255,255,255,.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-weight: 800;
+      letter-spacing: -.3px;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      color: white;
+      background: var(--primary);
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 26px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .nav-links a:hover { color: var(--primary); }
+
+    .nav-button {
+      padding: 10px 17px;
+      border-radius: 10px;
+      background: var(--primary);
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    /* HERO */
+    .hero {
+      padding: 82px 0 72px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 85% 20%, rgba(8,127,140,.11), transparent 30%),
+        radial-gradient(circle at 15% 80%, rgba(47,128,237,.07), transparent 30%);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      align-items: center;
+      gap: 65px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      padding: 7px 12px;
+      border: 1px solid #b9dfe3;
+      border-radius: 999px;
+      background: #e9f7f8;
+      color: var(--primary-dark);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .7px;
+      text-transform: uppercase;
+      margin-bottom: 19px;
+    }
+
+    h1 {
+      font-size: clamp(42px, 6vw, 68px);
+      line-height: 1.04;
+      letter-spacing: -2.7px;
+      margin-bottom: 22px;
+    }
+
+    .hero h1 span { color: var(--primary); }
+
+    .hero-subtitle {
+      color: var(--muted);
+      font-size: 19px;
+      max-width: 640px;
+      margin-bottom: 28px;
+    }
+
+    .hero-subtitle strong { color: var(--text); }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 13px 20px;
+      border-radius: 11px;
+      font-weight: 750;
+      font-size: 14px;
+      border: 1px solid transparent;
+      transition: .2s ease;
+    }
+
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+    .btn-secondary { background: white; border-color: var(--border); }
+    .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* DASHBOARD PREVIEW */
+    .dashboard {
+      background: #102a43;
+      padding: 17px;
+      border-radius: 24px;
+      box-shadow: 0 25px 70px rgba(16,42,67,.2);
+      transform: rotate(1deg);
+    }
+
+    .dashboard-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      padding: 4px 4px 15px;
+    }
+
+    .dashboard-title { font-size: 13px; font-weight: 800; }
+    .live {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #9ce7cb;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #36b37e;
+    }
+
+    .dash-body {
+      background: #f7fafc;
+      border-radius: 15px;
+      padding: 15px;
+    }
+
+    .dash-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+      margin-bottom: 12px;
+    }
+
+    .mini-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 11px;
+    }
+
+    .mini-card small { color: var(--muted); font-size: 9px; display: block; }
+    .mini-card strong { display: block; font-size: 22px; margin: 2px 0; }
+    .up { color: var(--danger); font-size: 9px; }
+    .down { color: var(--accent); font-size: 9px; }
+
+    .chart-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 12px;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .chart-header span { color: var(--muted); font-weight: 500; }
+
+    .chart {
+      height: 110px;
+      position: relative;
+      display: flex;
+      align-items: end;
+      gap: 7px;
+      padding: 10px 4px 0;
+      border-bottom: 1px solid #dbe5eb;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 24px,
+        #edf2f5 25px
+      );
+    }
+
+    .bar {
+      flex: 1;
+      border-radius: 5px 5px 0 0;
+      background: #b9dfe3;
+    }
+
+    .bar:nth-child(1) { height: 43%; }
+    .bar:nth-child(2) { height: 51%; }
+    .bar:nth-child(3) { height: 48%; }
+    .bar:nth-child(4) { height: 65%; }
+    .bar:nth-child(5) { height: 72%; }
+    .bar:nth-child(6) { height: 79%; background: var(--primary); }
+    .bar:nth-child(7) { height: 88%; background: var(--blue); }
+
+    .forecast-tag {
+      position: absolute;
+      right: 5px;
+      top: 4px;
+      font-size: 8px;
+      color: var(--blue);
+      font-weight: 800;
+    }
+
+    /* SECTION */
+    section { padding: 86px 0; }
+
+    .section-heading {
+      max-width: 730px;
+      margin-bottom: 42px;
+    }
+
+    .section-label {
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 9px;
+    }
+
+    h2 {
+      font-size: clamp(30px, 4vw, 44px);
+      line-height: 1.12;
+      letter-spacing: -1.5px;
+      margin-bottom: 13px;
+    }
+
+    .section-heading p { color: var(--muted); font-size: 17px; }
+
+    /* PROBLEM */
+    .problem-section { background: white; }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .problem-card {
+      padding: 28px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .problem-icon {
+      width: 43px;
+      height: 43px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: #edf4f8;
+      font-size: 20px;
+      margin-bottom: 18px;
+    }
+
+    .problem-card h3, .solution-card h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .problem-card p, .solution-card p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .result-box {
+      margin-top: 24px;
+      padding: 21px 25px;
+      border-left: 4px solid var(--primary);
+      background: #edf7f8;
+      color: #31566a;
+      border-radius: 0 13px 13px 0;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    /* SOLUTION */
+    .solution-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .solution-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 27px;
+      box-shadow: 0 8px 28px rgba(16,42,67,.045);
+    }
+
+    .solution-number {
+      color: var(--primary);
+      font-weight: 900;
+      font-size: 12px;
+      margin-bottom: 17px;
+    }
+
+    .tech-stack {
+      margin-top: 38px;
+      padding: 24px;
+      border-radius: var(--radius);
+      background: #102a43;
+      color: white;
+    }
+
+    .tech-stack h3 { margin-bottom: 16px; font-size: 17px; }
+    .tech-list { display: flex; flex-wrap: wrap; gap: 9px; }
+
+    .tech {
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.07);
+      padding: 8px 11px;
+      border-radius: 8px;
+      font-size: 12px;
+      color: #dbeef2;
+    }
+
+    /* AUDIENCE */
+    .audience-section { background: white; }
+
+    .audience-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .audience-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 30px;
+    }
+
+    .audience-card.internal { background: #f2faf9; }
+    .audience-card.external { background: #f5f8fc; }
+
+    .audience-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 23px;
+    }
+
+    .audience-title h3 { font-size: 20px; }
+
+    .audience-item {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 12px;
+      padding: 15px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .audience-item:first-of-type { border-top: 0; }
+
+    .audience-item-icon {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: white;
+      border: 1px solid var(--border);
+    }
+
+    .audience-item strong { display: block; font-size: 14px; }
+    .audience-item span { color: var(--muted); font-size: 13px; }
+
+    /* FLOW */
+    .flow-section { background: var(--bg); }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      align-items: center;
+      gap: 12px;
+    }
+
+    .flow-step {
+      position: relative;
+      text-align: center;
+      padding: 22px 12px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: white;
+    }
+
+    .flow-step .circle {
+      width: 42px;
+      height: 42px;
+      margin: 0 auto 11px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #e6f5f6;
+      color: var(--primary);
+      font-weight: 900;
+    }
+
+    .flow-step strong { font-size: 13px; display: block; }
+    .flow-step span { color: var(--muted); font-size: 11px; }
+
+    .arrow {
+      text-align: center;
+      color: var(--primary);
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    /* GOVERNANCE */
+    .governance {
+      background: #102a43;
+      color: white;
+    }
+
+    .governance-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 45px;
+      align-items: center;
+    }
+
+    .governance .section-label { color: #76d6dd; }
+    .governance p { color: #b9ccda; }
+
+    .principles {
+      display: grid;
+      gap: 13px;
+    }
+
+    .principle {
+      display: flex;
+      gap: 13px;
+      align-items: flex-start;
+      padding: 17px;
+      border: 1px solid rgba(255,255,255,.13);
+      border-radius: 13px;
+      background: rgba(255,255,255,.045);
+    }
+
+    .check {
+      width: 25px;
+      height: 25px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #1e6771;
+      color: white;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .principle strong { display: block; font-size: 14px; }
+    .principle span { display: block; color: #b9ccda; font-size: 12px; margin-top: 2px; }
+
+    /* CTA */
+    .cta {
+      padding: 76px 0;
+      background: #eaf6f7;
+      text-align: center;
+    }
+
+    .cta h2 { max-width: 720px; margin: 0 auto 13px; }
+    .cta p { color: var(--muted); max-width: 650px; margin: auto auto 25px; }
+
+    footer {
+      background: #0b2034;
+      color: #a8bdcc;
+      padding: 24px 0;
+      font-size: 12px;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: center;
+    }
+
+    /* MOBILE */
+    @media (max-width: 900px) {
+      .hero-grid,
+      .governance-grid { grid-template-columns: 1fr; }
+
+      .dashboard { max-width: 650px; margin: auto; }
+      .problem-grid { grid-template-columns: 1fr; }
+      .flow { grid-template-columns: 1fr; }
+      .arrow { transform: rotate(90deg); }
+    }
+
+    @media (max-width: 680px) {
+      .container { width: min(100% - 28px, 1160px); }
+      .nav-links { display: none; }
+      .nav-button { display: none; }
+      section { padding: 65px 0; }
+      .hero { padding: 58px 0 55px; }
+      h1 { letter-spacing: -1.8px; }
+      .hero-subtitle { font-size: 16px; }
+      .solution-grid,
+      .audience-grid { grid-template-columns: 1fr; }
+      .dash-cards { grid-template-columns: 1fr 1fr 1fr; }
+      .mini-card strong { font-size: 17px; }
+      .footer-inner { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+
+<body>
+  <nav>
+    <div class="container nav-inner">
+      <a href="#home" class="brand">
+        <div class="brand-icon">+</div>
+        <span>HealthFlow AI</span>
+      </a>
+
+      <div class="nav-links">
+        <a href="#problem">Problem</a>
+        <a href="#solution">Solution</a>
+        <a href="#audiences">Users</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#governance">Governance</a>
+      </div>
+
+      <a href="#solution" class="nav-button">Explore Platform</a>
+    </div>
+  </nav>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero" id="home">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow">Healthcare · AI Case Study</div>
+          <h1>AI-Powered Hospital <span>Capacity</span> & Patient Flow Intelligence</h1>
+          <p class="hero-subtitle">
+            <strong>Predicting demand. Protecting capacity. Supporting care teams.</strong><br />
+            A shared intelligence platform that helps hospitals anticipate demand,
+            understand patient flow and make better resource-planning decisions.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#solution" class="btn btn-primary">View the solution</a>
+            <a href="#architecture" class="btn btn-secondary">See how it works</a>
+          </div>
+        </div>
+
+        <div class="dashboard" aria-label="Hospital intelligence dashboard preview">
+          <div class="dashboard-top">
+            <div class="dashboard-title">Hospital Capacity Intelligence</div>
+            <div class="live"><span class="live-dot"></span> LIVE DATA</div>
+          </div>
+
+          <div class="dash-body">
+            <div class="dash-cards">
+              <div class="mini-card">
+                <small>Bed Occupancy</small>
+                <strong>87%</strong>
+                <span class="up">↑ 4.2% vs yesterday</span>
+              </div>
+              <div class="mini-card">
+                <small>ED Volume</small>
+                <strong>142</strong>
+                <span class="up">↑ 8.1% expected</span>
+              </div>
+              <div class="mini-card">
+                <small>Available Beds</small>
+                <strong>36</strong>
+                <span class="down">↓ 7 beds today</span>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-header">
+                <div>7-Day Bed Occupancy Forecast</div>
+                <span>AI forecast</span>
+              </div>
+              <div class="chart">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="forecast-tag">FORECAST →</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROBLEM -->
+    <section class="problem-section" id="problem">
+      <div class="container">
+        <div class="section-heading">
+          <div class="section-label">The Problem</div>
+          <h2>Hospitals plan resources with yesterday's picture.</h2>
+          <p>
+            Important information is often available, but it is spread across
+            different systems and reviewed manually.
+          </p>
+        </div>
+
+        <div class="problem-grid">
+          <article class="problem-card">
+            <div class="problem-icon">▦</div>
+            <h3>Fragmented data</h3>
+            <p>
+              Patient, lab, admission and bed data sit in separate systems,
+              so a complete picture takes time to assemble.
+            </p>
+          </article>
+
+          <article class="problem-card">
+            <div class="problem-icon">↗</div>
+            <h3>Reactive planning</h3>
+            <p>
+              Bed and staff allocation often responds to overcrowding after
+              it happens instead of preparing for demand earlier.
+            </p>
+          </article>
+
+          <article class="problem-card">
+            <div class="problem-icon">⌕</div>
+            <h3>Slow information review</h3>
+            <p>
+              Clinicians and operational teams spend valuable time reviewing
+              charts, labs and history instead of focusing on what changed.
+            </p>
+          </article>
+        </div>
+
+        <div class="result-box">
+          <strong>The result:</strong> emergency departments and wards can feel pressure
+          before management has enough time to respond, while staff spend additional
+          time assembling patient and operational context.
+        </div>
+      </div>
+    </section>
+
+    <!-- SOLUTION -->
+    <section id="solution">
+      <div class="container">
+        <div class="section-heading">
+          <div class="section-label">The Solution</div>
+          <h2>One platform to predict, plan and explain.</h2>
+          <p>
+            An AI-powered hospital intelligence platform that forecasts demand
+            and capacity while giving staff a simpler way to understand approved data.
+          </p>
+        </div>
+
+        <div class="solution-grid">
+          <article class="solution-card">
+            <div class="solution-number">01 · FORECAST</div>
+            <h3>Demand & Bed Forecasting</h3>
+            <p>
+              Predict admissions, emergency department volume and bed occupancy
+              1–7 days ahead using historical and live hospital data.
+            </p>
+          </article>
+
+          <article class="solution-card">
+            <div class="solution-number">02 · SUPPORT</div>
+            <h3>Patient Risk Signals</h3>
+            <p>
+              Provide decision-support indicators that may help care teams
+              identify patients who warrant closer clinical review. These are
+              signals, not diagnoses.
+            </p>
+          </article>
+
+          <article class="solution-card">
+            <div class="solution-number">03 · ASK</div>
+            <h3>Gemini Analytics Assistant</h3>
+            <p>
+              Let authorised staff ask plain-language questions about approved
+              hospital data instead of manually searching through multiple reports.
+            </p>
+          </article>
+
+          <article class="solution-card">
+            <div class="solution-number">04 · VISUALISE</div>
+            <h3>Operations Intelligence</h3>
+            <p>
+              Give hospital management dashboards for occupancy, demand trends,
+              capacity planning and resource allocation.
+            </p>
+          </article>
+        </div>
+
+        <div class="tech-stack">
+          <h3>Example technology stack</h3>
+          <div class="tech-list">
+            <span class="tech">EHR / Hospital Systems</span>
+            <span class="tech">FHIR / HL7</span>
+            <span class="tech">Google Cloud Healthcare API</span>
+            <span class="tech">BigQuery</span>
+            <span class="tech">BigQuery ML</span>
+            <span class="tech">Vertex AI</span>
+            <span class="tech">Gemini</span>
+            <span class="tech">Looker</span>
+            <span class="tech">Cloud Run</span>
+            <span class="tech">Pub/Sub</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- AUDIENCES -->
+    <section class="audience-section" id="audiences">
+      <div class="container">
+        <div class="section-heading">
+          <div class="section-label">Who It Serves</div>
+          <h2>Two audiences. One shared data layer.</h2>
+          <p>
+            Internal teams receive operational intelligence, while patients,
+            caregivers and the public receive approved general information.
+          </p>
+        </div>
+
+        <div class="audience-grid">
+          <div class="audience-card internal">
+            <div class="audience-title">
+              <span>🏥</span>
+              <h3>Internal: Care Teams & Operations</h3>
+            </div>
+
+            <div class="audience-item">
+              <div class="audience-item-icon">🩺</div>
+              <div>
+                <strong>Doctors & Nurses</strong>
+                <span>Risk indicators and AI-generated patient summaries to support review prioritisation.</span>
+              </div>
+            </div>
+
+            <div class="audience-item">
+              <div class="audience-item-icon">🛏</div>
+              <div>
+                <strong>Hospital Administrators</strong>
+                <span>Live bed occupancy, admissions and emergency department demand forecasts.</span>
+              </div>
+            </div>
+
+            <div class="audience-item">
+              <div class="audience-item-icon">▥</div>
+              <div>
+                <strong>Management</strong>
+                <span>Trend analytics and resource-planning dashboards through Looker.</span>
+              </div>
+            </div>
+
+            <div class="audience-item">
+              <div class="audience-item-icon">⚙</div>
+              <div>
+                <strong>IT / Data Teams</strong>
+                <span>One governed data pipeline instead of repeated siloed exports.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="audience-card external">
+            <div class="audience-title">
+              <span>👤</span>
+              <h3>External: Patients & Public</h3>
+            </div>
+
+            <div class="audience-item">
+              <div class="audience-item-icon">📅</div>
+              <div>
+                <strong>Patients</strong>
+                <span>Appointment information, reminders and general hospital information.</span>
+              </div>
+            </div>
+
+            <div class="audience-item">
+              <div class="audience-item-icon">👨‍👩‍👧</div>
+              <div>
+                <strong>Caregivers & Family</strong>
+                <span>Approved visiting details and hospital service information.</span>
+              </div>
+            </div>
+
+            <div class="audience-item">
+              <div class="audience-item-icon">ℹ</div>
+              <div>
+                <strong>Public</strong>
+                <span>Department locations, operating hours and frequently asked questions.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARCHITECTURE -->
+    <section class="flow-section" id="architecture">
+      <div class="container">
+        <div class="section-heading">
+          <div class="section-label">How It Works</div>
+          <h2>From hospital data to actionable intelligence.</h2>
+          <p>
+            The platform connects existing healthcare data sources into a governed
+            pipeline, applies analytics and AI, and presents useful outputs to authorised users.
+          </p>
+        </div>
+
+        <div class="flow">
+          <div class="flow-step">
+            <div class="circle">01</div>
+            <strong>Hospital Data</strong>
+            <span>EHR, labs, admissions, beds</span>
+          </div>
+
+          <div class="arrow">→</div>
+
+          <div class="flow-step">
+            <div class="circle">02</div>
+            <strong>Healthcare Data Layer</strong>
+            <span>FHIR, HL7, secure storage</span>
+          </div>
+
+          <div class="arrow">→</div>
+
+          <div class="flow-step">
+            <div class="circle">03</div>
+            <strong>AI & Analytics</strong>
+            <span>ML forecasting + Gemini</span>
+          </div>
+
+          <div class="arrow">→</div>
+
+          <div class="flow-step">
+            <div class="circle">04</div>
+            <strong>Insights</strong>
+            <span>Forecasts, signals, answers</span>
+          </div>
+
+          <div class="arrow">→</div>
+
+          <div class="flow-step">
+            <div class="circle">05</div>
+            <strong>Decision Support</strong>
+            <span>Dashboards & planning</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GOVERNANCE -->
+    <section class="governance" id="governance">
+      <div class="container governance-grid">
+        <div>
+          <div class="section-label">Responsible AI</div>
+          <h2>AI supports decisions. People stay in control.</h2>
+          <p>
+            Healthcare AI should assist clinical and operational teams rather than
+            replace professional judgement. The platform is designed around governed
+            access, explainability and human review.
+          </p>
+        </div>
+
+        <div class="principles">
+          <div class="principle">
+            <div class="check">✓</div>
+            <div>
+              <strong>Human-in-the-loop</strong>
+              <span>Clinicians and administrators remain responsible for final decisions.</span>
+            </div>
+          </div>
+
+          <div class="principle">
+            <div class="check">✓</div>
+            <div>
+              <strong>Role-based access</strong>
+              <span>Users only access information appropriate to their role and purpose.</span>
+            </div>
+          </div>
+
+          <div class="principle">
+            <div class="check">✓</div>
+            <div>
+              <strong>Decision support, not diagnosis</strong>
+              <span>Risk signals are intended to support review and should not be treated as medical diagnoses.</span>
+            </div>
+          </div>
+
+          <div class="principle">
+            <div class="check">✓</div>
+            <div>
+              <strong>Governed data</strong>
+              <span>Healthcare information is handled through controlled pipelines, policies and approved data sources.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+      <div class="container">
+        <h2>Predict demand before capacity becomes a problem.</h2>
+        <p>
+          Turn fragmented hospital information into timely intelligence that helps
+          teams plan earlier, respond faster and keep people at the centre of care.
+        </p>
+        <a href="#home" class="btn btn-primary">Back to top ↑</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <span>HealthFlow AI · Healthcare Case Study</span>
+      <span>AI-powered capacity & patient flow intelligence</span>
+    </div>
+  </footer>
+</body>
+</html>
